@@ -85,10 +85,10 @@ public interface OnePasswordConfig extends Config {
 
   @ConfigItem(
       keyName = OP_ACCOUNT_PATH_CONFIG,
-      name = "1Password Account",
+      name = "1Password Account ID",
       secret = true,
       position = 101,
-      description = "Select the account to execute the command by account shorthand, sign-in address, account ID, or user ID."
+      description = "The 1Password account to execute the command by account shorthand, sign-in address, account ID, or user ID. Find who your information by executing 'op whoami' after signing in with 'op signin'"
   )
   default String opAccount() {
     return "";
@@ -96,10 +96,10 @@ public interface OnePasswordConfig extends Config {
 
   @ConfigItem(
       keyName = OP_OSRS_ITEM_PATH_CONFIG,
-      name = "Runescape account item",
+      name = "1Password RuneScape Item",
       secret = true,
       position = 102,
-      description = "Select the account to execute the command by account shorthand, sign-in address, account ID, or user ID."
+      description = "The item ID of your OSRS item. Find it by executing 'op item list'"
   )
   default String opOSRSVaultItem() {
       return "";

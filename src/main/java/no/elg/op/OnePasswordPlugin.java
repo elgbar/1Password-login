@@ -62,7 +62,12 @@ public class OnePasswordPlugin extends Plugin {
   @Inject
   private ClientThread clientThread;
 
-  boolean tried = false;
+  private boolean tried;
+
+  @Override
+  protected void startUp() {
+    tried = false;
+  }
 
   public void tryLogIn() {
     if (LOGIN_SCREEN == client.getGameState()) {

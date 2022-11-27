@@ -35,6 +35,7 @@ public class CommandExecutor {
     String opAccount = config.opAccount();
     environment.put("OP_ACCOUNT", opAccount);
     environment.put("OP_ISO_TIMESTAMPS", "");
+    environment.put("OP_CACHE", "true");
     switch (OSType.getOSType()) {
       case Linux:
       case MacOS:
