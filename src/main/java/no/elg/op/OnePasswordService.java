@@ -36,6 +36,8 @@ public class OnePasswordService {
   private final Executor threadExecutor = Executors.newCachedThreadPool();
 
   public static final String WIN_UNKNOWN_CMD = "is not recognized as an internal or external command";
+  public static final String LIN_UNKNOWN_CMD = "command not found";
+  public static final String OP_CLI_NOT_LOGGED_IN= "Sign in to an account to get started.";
   public static final String OP_CLI_AUTH_DISMISSED = "authorization prompt dismissed, please try again";
   public static final String OP_CLI_VAULT_NOT_UNLOCKED = "biometrics currently not available. Please open 1Password, unlock it with your password and then try again";
   public static final String OP_CLI_UNKNOWN_FIELD = "isn't a field in the";
