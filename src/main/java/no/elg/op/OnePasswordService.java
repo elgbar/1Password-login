@@ -117,8 +117,8 @@ public class OnePasswordService {
           "Invalid runescape account item in config: " + message.substring(message.indexOf('"'))
               + " You can find the item id by executing the command 'op item ls' in bash/cmd.");
       return true;
-    } else if (message.contains(OP_CLI_INTERNAL_ERROR) || message.contains(
-        OP_CLI_INTERNAL_ERROR_2)) {
+    } else if (message.contains(OP_CLI_INTERNAL_ERROR)
+        || message.contains(OP_CLI_INTERNAL_ERROR_2)) {
       plugin.showWarning("1Password Internal Error",
           "1Password cli threw an internal error, please restart the plugin\n\n" + message);
       return true;

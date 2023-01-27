@@ -27,6 +27,6 @@ group = 'no.elg'
 version = '1.0.0'
 sourceCompatibility = '1.8'
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
