@@ -95,7 +95,7 @@ public interface OnePasswordConfig extends Config {
 
   @ConfigItem(
       keyName = OP_CACHE_CONFIG,
-      name = "Enable 1Password CLI cache",
+      name = "Enable 1Password CLI Cache",
       position = 2,
       section = CLI_SECTION,
       description =
@@ -113,10 +113,10 @@ public interface OnePasswordConfig extends Config {
 
   @ConfigItem(
       keyName = OP_OSRS_ITEM_USERNAME_FIELD_PATH_CONFIG,
-      name = "Username field name",
+      name = "Username Field Name",
       section = ITEM_FIELDS_SECTION,
       position = 1,
-      description = "Select the account to execute the command by account shorthand, sign-in address, account ID, or user ID."
+      description = "The field name of the username/email section of the vault item"
   )
   default String opUsernameField() {
     return "username";
@@ -124,10 +124,10 @@ public interface OnePasswordConfig extends Config {
 
   @ConfigItem(
       keyName = OP_OSRS_ITEM_PASSWORD_FIELD_PATH_CONFIG,
-      name = "Password field name",
+      name = "Password Field Name",
       section = ITEM_FIELDS_SECTION,
       position = 2,
-      description = "Select the account to execute the command by account shorthand, sign-in address, account ID, or user ID."
+      description = "The field name of the username/email section of the vault item"
   )
   default String opPasswordField() {
     return "password";

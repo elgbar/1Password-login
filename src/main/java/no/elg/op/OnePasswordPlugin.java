@@ -122,8 +122,13 @@ public class OnePasswordPlugin extends Plugin {
           closeEnteringCredentialsDialog(enteringCredentialsDialog);
           JOptionPane pane = new JOptionPane();
           pane.setMessage(
-              "The 1Password login plugin is entering your credentials for you, please wait.\nA prompt will appear for you to enter your Windows Hello");
+              "The 1Password login plugin is entering your credentials for you, please wait."
+                  + "\nA prompt will appear for you to enter your 1Password credentials (Windows Hello/Biometrics/system password)."
+                  + "\nIt might be on another screen or under a window."
+                  + "\n"
+                  + "\nThis window will automatically close when the login is complete.");
           pane.setMessageType(JOptionPane.PLAIN_MESSAGE);
+          pane.setOptions(new Object[]{});
           enteringCredentialsDialog = pane.createDialog(client.getCanvas(),
               "Waiting for 1Password CLI response");
           enteringCredentialsDialog.setVisible(true);
@@ -146,6 +151,7 @@ public class OnePasswordPlugin extends Plugin {
       log.debug("Entering credentials for the user");
       client.setUsername(username);
       client.setPassword(password);
+//      clientThread.invoke(() -> client.setGameState(GameState.LOGGING_IN));
       closeEnteringCredentialsDialog();
     });
   }
@@ -155,6 +161,7 @@ public class OnePasswordPlugin extends Plugin {
     clientThread.invoke(() -> {
       log.debug("Entering OTP for the user");
       client.setOtp(otp);
+//      clientThread.invoke(() -> client.setGameState(GameState.LOGGING_IN));
       closeEnteringCredentialsDialog();
     });
   }

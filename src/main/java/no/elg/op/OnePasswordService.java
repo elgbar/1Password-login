@@ -67,12 +67,12 @@ public class OnePasswordService {
       }
     }
     if (username == null) {
-      plugin.showWarning("Invalid 1Password field",
+      plugin.showWarning("Invalid 1Password username field",
           "Failed to find the 1Password field for your OSRS username");
       return;
     }
     if (password == null) {
-      plugin.showWarning("Invalid 1Password field",
+      plugin.showWarning("Invalid 1Password username field",
           "Failed to find the 1Password field for your OSRS password");
       return;
     }
@@ -93,11 +93,10 @@ public class OnePasswordService {
   };
 
   private boolean invalidMessage(String message) {
-    log.info(message);
     if (message.contains(CMD_UNKNOWN_CMD) || message.contains(CMD_UNKNOWN_CMD_2)
         || message.contains(BASH_UNKNOWN_CMD)) {
       plugin.showWarning("Invalid op CLI path",
-          "Failed to find an executable at the given path to the 1Password cli. Check the plugins settings");
+          "Failed to find an executable at the given path to the 1Password cli. Check the plugins settings and restart runelite.");
       return true;
 
     } else if (message.contains(OP_CLI_VAULT_NOT_UNLOCKED)) {
@@ -121,7 +120,7 @@ public class OnePasswordService {
     } else if (message.contains(OP_CLI_INTERNAL_ERROR) || message.contains(
         OP_CLI_INTERNAL_ERROR_2)) {
       plugin.showWarning("1Password Internal Error",
-          "1Password cli threw an internal error, please restart the plugin");
+          "1Password cli threw an internal error, please restart the plugin\n\n" + message);
       return true;
     } else if (message.contains(OP_CLI_INIT_ERROR)) {
       plugin.showWarning("1Password Initialization Error", message);
