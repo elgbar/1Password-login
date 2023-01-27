@@ -7,15 +7,10 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
 
 @Singleton
 @Slf4j
@@ -29,15 +24,10 @@ public class OnePasswordService {
   @Inject
   private CommandExecutor commandExecutor;
   @Inject
-  private Client client;
-  @Inject
   private Gson gson;
-  @Inject
-  private CredentialsManager credentialsManager;
-
-  private final Executor threadExecutor = Executors.newSingleThreadExecutor();
 
   public static final String CMD_UNKNOWN_CMD = "is not recognized as an internal or external command";
+  public static final String CMD_UNKNOWN_CMD_2 = "The system cannot find the path specified.";
   public static final String BASH_UNKNOWN_CMD = "command not found";
   public static final String OP_CLI_NOT_LOGGED_IN = "Sign in to an account to get started.";
   public static final String OP_CLI_AUTH_DISMISSED = "authorization prompt dismissed, please try again";
@@ -48,12 +38,12 @@ public class OnePasswordService {
   public static final String OP_CLI_INTERNAL_ERROR_2 = "An operation was attempted on something that is not a socket.";
   public static final String OP_CLI_INIT_ERROR = "error initializing client:";
 
+  public static final int OTP_LENGTH = 6;
+
   private static final Type FIELDS_TYPE = new TypeToken<List<Map<String, Object>>>() {
   }.getType();
 
-  private final AtomicBoolean cmdRunning = new AtomicBoolean(false);
-
-  private final Consumer<String> usernameAndPasswordSetter = stringJson -> {
+  private final Consumer<String> usernameAndPasswordConsumer = stringJson -> {
     if (invalidMessage(stringJson)) {
       return;
     }
@@ -63,7 +53,6 @@ public class OnePasswordService {
     } catch (JsonIOException | JsonSyntaxException e) {
       plugin.showWarning("Invalid JSON",
           "Failed to parse returned json, please check your configuration");
-      log.info("json: " + stringJson);
       return;
     }
 
@@ -87,31 +76,33 @@ public class OnePasswordService {
           "Failed to find the 1Password field for your OSRS password");
       return;
     }
-    if (config.storePasswordInSession()) {
-      credentialsManager.set(username, password);
-    }
     plugin.enterUsernameAndPassword(username, password);
   };
 
-  private final Consumer<String> otpSetter = otp -> {
+  private final Consumer<String> otpConsumer = rawOTP -> {
+    String otp = rawOTP.trim();
     if (invalidMessage(otp)) {
       return;
     }
-    if (otp.length() == 6) {
-      client.setOtp(otp);
+    if (otp.length() != OTP_LENGTH) {
+      plugin.showWarning("OTP Length",
+          "Returned OTP length is not the expected size! OTP: '" + otp + "'");
+      return;
     }
+    plugin.enterOTP(otp);
   };
 
   private boolean invalidMessage(String message) {
     log.info(message);
-    if (message.contains(CMD_UNKNOWN_CMD) || message.contains(BASH_UNKNOWN_CMD)) {
+    if (message.contains(CMD_UNKNOWN_CMD) || message.contains(CMD_UNKNOWN_CMD_2)
+        || message.contains(BASH_UNKNOWN_CMD)) {
       plugin.showWarning("Invalid op CLI path",
           "Failed to find an executable at the given path to the 1Password cli. Check the plugins settings");
       return true;
 
     } else if (message.contains(OP_CLI_VAULT_NOT_UNLOCKED)) {
       plugin.showWarning("1Password not unlocked",
-          "Your 1Password vault has not been unlocked yet, please login and restart the plugin");
+          "Your 1Password vault has not been unlocked yet, please login then restart the plugin");
       return true;
 
     } else if (message.contains(OP_CLI_UNKNOWN_FIELD)) {
@@ -133,45 +124,35 @@ public class OnePasswordService {
           "1Password cli threw an internal error, please restart the plugin");
       return true;
     } else if (message.contains(OP_CLI_INIT_ERROR)) {
-      plugin.showWarning("1Password Initialization Error",
-          message.substring(message.lastIndexOf(':')));
+      plugin.showWarning("1Password Initialization Error", message);
       return true;
     } else if (message.contains(OP_CLI_NOT_LOGGED_IN)) {
       plugin.showWarning("Not signed into 1Password",
-          "You are not signed into the 1Password CLI. Please login and specify your account id");
+          "You are not signed into the 1Password CLI. Please login and specify your account id, then restart the plugin");
       return true;
     }
     return false;
   }
 
-  @Synchronized
   public void enterUsernameAndPassword() {
-    boolean entered = credentialsManager.enterUsernameAndPassword();
-    if (!entered && !cmdRunning.get()) {
-      cmdRunning.set(true);
-      threadExecutor.execute(() -> {
-            commandExecutor.executeCommand(
-                usernameAndPasswordSetter,
-                "item",
-                "get",
-                config.opOSRSVaultItem(),
-                "--field", config.opUsernameField(),
-                "--field", config.opPasswordField(),
-                "--format", "json"
-            );
-            cmdRunning.set(false);
-          }
-      );
-    }
+    commandExecutor.executeCommand(
+        usernameAndPasswordConsumer,
+        "item",
+        "get",
+        config.opOSRSVaultItem(),
+        "--field", config.opUsernameField(),
+        "--field", config.opPasswordField(),
+        "--format", "json"
+    );
   }
 
   public void enterOTP() {
-    threadExecutor.execute(() -> commandExecutor.executeCommand(
-        otpSetter,
+    commandExecutor.executeCommand(
+        otpConsumer,
         "item",
         "get",
         config.opOSRSVaultItem(),
         "--otp"
-    ));
+    );
   }
 }

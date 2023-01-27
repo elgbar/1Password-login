@@ -2,7 +2,8 @@
   <configuration default="false" name="Run" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="no.elg.op.PluginTest" />
     <module name="1Password-login.test" />
-    <option name="VM_PARAMETERS" value="-ea" />
+    <option name="PROGRAM_PARAMETERS" value="--developer-mode" />
+    <option name="VM_PARAMETERS" value="-ea " />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="no.elg.op.clean.*" />

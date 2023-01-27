@@ -36,7 +36,6 @@ public interface OnePasswordConfig extends Config {
   String GROUP = "1password";
 
   String CLI_PATH_CONFIG = "cliPath";
-  String STORE_CREDENTIALS_IN_MEMORY_KEY = "inMemoryCredentials";
   String OP_ACCOUNT_PATH_CONFIG = "opAccount";
   String OP_OSRS_ITEM_PATH_CONFIG = "opItem";
   String OP_OSRS_ITEM_USERNAME_FIELD_PATH_CONFIG = "opFieldUsername";
@@ -51,7 +50,6 @@ public interface OnePasswordConfig extends Config {
   default String cliPath() {
     return "op";
   }
-
 
   @ConfigItem(
       keyName = OP_OSRS_ITEM_USERNAME_FIELD_PATH_CONFIG,
@@ -74,21 +72,11 @@ public interface OnePasswordConfig extends Config {
   }
 
   @ConfigItem(
-      keyName = STORE_CREDENTIALS_IN_MEMORY_KEY,
-      name = "Store credentials in-memory",
-      position = 3,
-      description = "Store credentials in-memory, reducing the time to login in within the same session."
-  )
-  default boolean storePasswordInSession() {
-    return false;
-  }
-
-  @ConfigItem(
       keyName = OP_ACCOUNT_PATH_CONFIG,
-      name = "1Password Account ID",
+      name = "1Password User ID",
       secret = true,
-      position = 101,
-      description = "The 1Password account to execute the command by account shorthand, sign-in address, account ID, or user ID. Find who your information by executing 'op whoami' after signing in with 'op signin'"
+      position = -101,
+      description = "The 1Password account to execute the command by account shorthand, sign-in address, account ID, or user ID."
   )
   default String opAccount() {
     return "";
@@ -98,10 +86,10 @@ public interface OnePasswordConfig extends Config {
       keyName = OP_OSRS_ITEM_PATH_CONFIG,
       name = "1Password RuneScape Item",
       secret = true,
-      position = 102,
+      position = -102,
       description = "The item ID of your OSRS item. Find it by executing 'op item list'"
   )
   default String opOSRSVaultItem() {
-      return "";
+    return "";
   }
 }

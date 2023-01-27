@@ -3,43 +3,46 @@ package no.elg.op;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
 import net.runelite.client.util.OSType;
 
 @Singleton
 @Slf4j
 public class CommandExecutor {
 
-
   @Inject
   private OnePasswordPlugin plugin;
 
   @Inject
   private OnePasswordConfig config;
+  private final Executor threadExecutor = Executors.newSingleThreadExecutor();
 
   public void executeCommand(Consumer</*@Nonnull*/ String> consumer, String... arguments) {
+    plugin.showEnteringCredentialsDialog();
+    threadExecutor.execute(() -> syncExecuteCommand(consumer, arguments));
+  }
+
+  private void syncExecuteCommand(Consumer</*@Nonnull*/ String> consumer, String... arguments) {
     ProcessBuilder pb = new ProcessBuilder();
     pb.redirectErrorStream(true);
     Map<String, String> environment = pb.environment();
     String opAccount = config.opAccount();
     environment.put("OP_ACCOUNT", opAccount);
-    environment.put("OP_ISO_TIMESTAMPS", "");
+    environment.put("OP_ISO_TIMESTAMPS", "true");
     environment.put("OP_CACHE", "true");
     switch (OSType.getOSType()) {
       case Linux:
       case MacOS:
-        pb.command("bash", "-c");
+        pb.command("sh", "-c");
         break;
       case Windows:
         pb.command("cmd", "/c");
