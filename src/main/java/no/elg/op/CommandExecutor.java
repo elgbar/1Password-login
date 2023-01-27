@@ -39,6 +39,8 @@ public class CommandExecutor {
     environment.put("OP_ACCOUNT", opAccount);
     environment.put("OP_ISO_TIMESTAMPS", "true");
     environment.put("OP_CACHE", "true");
+    environment.put("OP_BIOMETRIC_UNLOCK_ENABLED",
+        "true"); // temporarily enable the 1Password CLI and 1Password app integration
     switch (OSType.getOSType()) {
       case Linux:
       case MacOS:
