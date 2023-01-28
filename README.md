@@ -1,5 +1,7 @@
 # 1Password Login
 
+**There is another 1Password plugin already: https://github.com/tymscar/runelite-1password-plugin**
+
 Log into your account using the 1Password Command Line Interface (CLI)
 
 ## How it works
